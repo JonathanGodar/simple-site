@@ -1,6 +1,7 @@
 <script lang="ts">
 import { PriorityQueue } from "$lib/priority_queue";
 
+let animation_speed: number = 5;
 
 type Cell = {
 	cost: number,
@@ -16,7 +17,8 @@ type Cell = {
 
 let board: Cell[][] = []
 
-let queue: PriorityQueue<Cell> = new PriorityQueue((cellA, cellB) => cellA.cost + cellA.unfavourability < cellB.cost + cellB.unfavourability);
+let le_func: any = (cellA: any, cellB :any) => cellA.cost + cellA.unfavourability < cellB.cost + cellB.unfavourability;
+let queue: PriorityQueue<Cell> = new PriorityQueue(le_func);
 
 let target = [8,8];
 let start = [0,0];
@@ -54,8 +56,31 @@ function toggle_blocked(cell: Cell){
 	board = board;
 }
 
-function path_found(target: Cell){
-	alert("found target");
+function reset_algorithm(){
+	clearTimeout(animation_timeout);
+
+	for(let row of board) {
+		for(let cell of row) {
+			cell.unfavourability = Infinity;
+			cell.cost = Infinity;
+			cell.best_path_through = undefined;
+			cell.is_part_of_path = false;
+			cell.is_done = false;
+		}
+	}
+	board[start[0]][start[1]].cost = 0;
+
+	queue = new PriorityQueue(le_func);
+	queue.enqueue(board[start[0]][start[1]]);
+
+
+	target_found = false;
+
+	board = board;
+}
+
+function on_path_found(target: Cell){
+	target_found = true;
 	let prev = target;
 	while(true){
 		if(prev.pos[0] == start[0] && prev.pos[1] == start[1]) {
@@ -69,7 +94,26 @@ function path_found(target: Cell){
 	board = board;
 }
 
+let target_found = false;
+let animation_timeout: undefined | NodeJS.Timeout = undefined;
+
+function process_animated(){
+	if(animation_timeout != undefined) return;
+
+	let step = () => {
+			if(!target_found) {
+				process()
+				animation_timeout = setTimeout(step, 1000/animation_speed);
+			} else {
+				animation_timeout = undefined;
+			}
+	}
+
+	step();
+}
+
 function process() {
+		clearTimeout(animation_timeout);
 		let curr;
 		do {
 			curr = queue.dequeue();
@@ -78,7 +122,7 @@ function process() {
 		} while(curr.is_blocked);
 
 		if(curr.is_target) {
-			path_found(curr);
+			on_path_found(curr);
 			return;
 		}
 
@@ -130,7 +174,14 @@ init_board();
 	{/each}
 </div>
 
-<button on:click={process}>Press to process</button>
+<button on:click={process_animated}>Press to process</button>
+<button on:click={process}>Press to step</button>
+<button on:click={reset_algorithm}>Press to reset</button>
+
+
+<label for="animationspeed">Animation speed</label>
+<input name="animationspeed" type="range" min="1" max="10" bind:value={animation_speed}>
+
 
 <p>{queue}</p>
 
