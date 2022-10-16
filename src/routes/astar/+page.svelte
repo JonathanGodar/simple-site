@@ -102,7 +102,7 @@ function process() {
 }
 
 function get_neighbors(origin: Cell): Cell[] {
-	const dirs = [[1, 0], [0, 1], [-1, 0], [0, -1]];
+	const dirs = [[1, 0], [1, 1], [0, 1], [-1, 1], [-1, 0], [1, -1], [0, -1]];
 	let build = [];
 	for(let dir of dirs) {
 		let coord = [origin.pos[0] + dir[0], origin.pos[1] + dir[1]];
