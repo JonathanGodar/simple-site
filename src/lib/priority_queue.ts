@@ -1,11 +1,23 @@
-export class PriorityQueue<T> {
+export class UniquePriorityQueue<T> {
 	private queue: T[] = [];
 	constructor(private le_func: (a: T, b: T) => boolean){}
+
 	enqueue(obj: T){
+		for(let i = 0; i < this.queue.length; i++){
+			if(obj === this.queue[i]){
+				this.queue.splice(i, 1);
+				break;
+			}
+		}
+
+		this.unique_enqueue(obj);
+	}
+	private unique_enqueue(obj: T){
 		if(this.is_empty()){
 			this.queue.push(obj);
 			return;
 		}
+
 
 		for(let i = 0; i < this.queue.length; i++) {
 			if(!this.le_func(this.queue[i], obj)){
@@ -59,3 +71,4 @@ export class PriorityQueue<T> {
 		return this.queue.length == 0;
 	}
 }
+

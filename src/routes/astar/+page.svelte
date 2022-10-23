@@ -1,5 +1,5 @@
 <script lang="ts">
-import { PriorityQueue } from "$lib/priority_queue";
+import { UniquePriorityQueue } from "$lib/priority_queue";
 
 let animation_speed: number = 5;
 
@@ -18,7 +18,7 @@ type Cell = {
 let board: Cell[][] = []
 
 let le_func: any = (cellA: any, cellB :any) => cellA.cost + cellA.unfavourability < cellB.cost + cellB.unfavourability;
-let queue: PriorityQueue<Cell> = new PriorityQueue(le_func);
+let queue: UniquePriorityQueue<Cell> = new UniquePriorityQueue(le_func);
 
 let target = [8,8];
 let start = [0,0];
@@ -70,7 +70,7 @@ function reset_algorithm(){
 	}
 	board[start[0]][start[1]].cost = 0;
 
-	queue = new PriorityQueue(le_func);
+	queue = new UniquePriorityQueue(le_func);
 	queue.enqueue(board[start[0]][start[1]]);
 
 
@@ -129,15 +129,18 @@ function process() {
 
 		let neighbors = get_neighbors(curr);
 
-		for(let neighbor of neighbors) {
-			if(!neighbor.is_done && neighbor.cost > curr.cost + 1){
-				neighbor.cost = curr.cost + 1;
-				neighbor.best_path_through = curr.pos; 
-				if(neighbor.unfavourability === Infinity){
-					neighbor.unfavourability = Math.sqrt(Math.pow(neighbor.pos[0] - target[0], 2) + Math.pow(neighbor.pos[1] - target[1], 2));
+		for(let neighbor_dist of neighbors) {
+			const {cell, dist} = neighbor_dist;
+
+			let new_cost = curr.cost + dist;
+			if(!cell.is_done && cell.cost > new_cost){
+				cell.cost = new_cost;
+				cell.best_path_through = curr.pos; 
+				if(cell.unfavourability === Infinity){
+					cell.unfavourability = Math.sqrt(Math.pow(cell.pos[0] - target[0], 2) + Math.pow(cell.pos[1] - target[1], 2));
 				}
 
-				queue.enqueue(neighbor);
+				queue.enqueue(cell);
 			}
 		}
 
@@ -145,13 +148,16 @@ function process() {
 		board = board;
 }
 
-function get_neighbors(origin: Cell): Cell[] {
+function get_neighbors(origin: Cell): {cell: Cell, dist: number}[] {
 	const dirs = [[1, 0], [1, 1], [0, 1], [-1, 1], [-1, 0], [1, -1], [0, -1]];
 	let build = [];
 	for(let dir of dirs) {
 		let coord = [origin.pos[0] + dir[0], origin.pos[1] + dir[1]];
 		if(Math.min(...coord) < 0 || Math.max(...coord) >= board_size) continue; 
-		build.push(board[coord[0]][coord[1]]);
+
+		let dist = (Math.abs(dir[0]) + Math.abs(dir[1])) == 2 ? Math.SQRT2 : 1;
+
+		build.push({cell: board[coord[0]][coord[1]], dist});
 	}
 	return build;
 }
@@ -169,7 +175,7 @@ init_board();
 			class:part_of_path={cell.is_part_of_path}
 			class:is_blocked={cell.is_blocked}
 			on:click={() => toggle_blocked(cell)}
-			><p>{x}, {y}<br>{cell.cost}</p></div>
+			><p>{x}, {y}</p></div>
 		{/each}
 	{/each}
 </div>
