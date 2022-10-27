@@ -1,9 +1,4 @@
-// export type flask = {
-// 	liquids: {
-// 		id: number,
-// 		ammount: number,
-// 	}
-// }
+export const flask_volume = 4;
 
 export type liquid = {
 	id: number,

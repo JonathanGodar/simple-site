@@ -1,24 +1,21 @@
 <script lang="ts">
-import { liquid_colors, type liquid } from "./flask";
+import { flask_volume, liquid_colors, type liquid } from "./flask";
 
 export let contents: liquid[];
+// export let id: number;
 
-
-$: air_size = 100 - contents.map((v) => v.ammount).reduce((p, v) => p + v);
+$: air_size = flask_volume - contents.map((v) => v.ammount).reduce((p, v) => p + v);
 $: () => {
 	console.log(air_size);
 }
 </script>
 
-<div class="flask">
-{#each contents as liquid }
-	<div class="liquid" style={`flex-grow: ${liquid.ammount}; background-color: ${liquid_colors[liquid.id]}`}></div>
-{/each}
-<div style={`flex-grow: ${air_size}; background-color: rgba(0, 0, 0, 0);`}></div>
+<div class="flask" on:click>
+	{#each contents as liquid }
+		<div class="liquid" style={`flex-grow: ${liquid.ammount}; background-color: ${liquid_colors[liquid.id]}`}></div>
+	{/each}
+	<div style={`flex-grow: ${air_size}; background-color: rgba(0, 0, 0, 0);`}></div>
 </div>
-
-
-
 
 <style>
 .flask {
@@ -30,10 +27,6 @@ $: () => {
 	min-width: 20px;
 	margin: 0.7em 0.5rem;
 }
-
-/* .liquid { */
-/* 	/1* border-top: 2px solid gray; *1/ */
-/* } */
 </style>
 
 
