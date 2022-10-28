@@ -3,58 +3,70 @@ import type { liquid } from "./flask";
 import Flask from "./flask.svelte";
 
 let flasks: liquid[][] = [
-	[
-		{
-				id: 1,
-				ammount: 1,
-		},
-		{
-				id: 2,
-				ammount: 3,
-		}
-	],
-	[
-		{
-				id: 2,
-				ammount: 2,
-		},
-		{
-				id: 3,
-				ammount: 2,
-		}
-	],
-	[
-		{
-				id: 2,
-				ammount: 1,
-		},
-		{
-				id: 3,
-				ammount: 1,
-		} ],
-
-	[
-		{
-				id: 2,
-				ammount: 1,
-		},
-		{
-				id: 3,
-				ammount: 3,
-		}
-	],
+[
+{ammount: 2, id: 2},
+], []
+	/* [ */
+	/* 	{ammount: 1, id: 0}, */
+	/* 	{ammount: 1, id: 1}, */
+	/* 	{ammount: 1, id: 0}, */
+	/* ], */
+	/* [ */
+	/* 	{ammount: 1, id: 1}, */
+	/* 	{ammount: 1, id: 0}, */
+	/* 	{ammount: 2, id: 2}, */
+	/* ], */
+	/* [ */
+	/* 	{ammount: 1, id: 0}, */
+	/* 	{ammount: 1, id: 3}, */
+	/* 	{ammount: 1, id: 4}, */
+	/* 	{ammount: 1, id: 3}, */
+	/* ], */
+	/* [ */
+	/* 	{ammount: 1, id: 1}, */
+	/* ], */
+	/* [ */
+	/* 	{ammount: 1, id: 4}, */
+	/* 	{ammount: 1, id: 2}, */
+	/* 	{ammount: 2, id: 4}, */
+	/* ], */
+	/* [ */
+	/* 	{ammount: 1, id: 1}, */
+	/* 	{ammount: 2, id: 3}, */
+	/* 	{ammount: 1, id: 2}, */
+	/* ], */
 ];
 
 let selected: number | undefined = undefined;
 
-
 function pour(from: number, to: number){
-	
+	if(flasks[to].length === 0){
+		flasks[to].push(flasks[from].shift() as any);
+		flasks = flasks;
+		return;
+	}
+
+	if(flasks[from][0].id !== flasks[to][0].id) return;
+
+	const to_filled = flasks[to].reduce((prev, flask) => prev + flask.ammount, 0);
+	const maximum_pour = flasks[from][0].ammount;
+
+	const remaining_space = 4 - to_filled;
+	const to_pour = Math.min(maximum_pour, remaining_space);
+
+	flasks[from][0].ammount = flasks[from][0].ammount - to_pour;
+	if(flasks[from][0].ammount === 0) flasks[from].shift();
+
+	flasks[to][0].ammount = flasks[to][0].ammount + to_pour;
 }
 
 
+
+
+
 function onFlaskPressed(index: number){
-	if(!selected) {
+	if(selected === undefined) {
+		if(flasks[index].length === 0) return;
 		selected = index;
 	} else if(selected == index) {
 		selected = undefined;
@@ -67,11 +79,11 @@ function onFlaskPressed(index: number){
 
 <div class="shelf">
 {#each flasks as flask, i}
-	<Flask contents={flask} on:click={
-		() => {
-			onFlaskPressed(i);
-		}
-	}/>
+			<Flask isSelected={i === selected} contents={flask} on:click={
+				() => {
+					onFlaskPressed(i);
+				}
+			}/>
 {/each}
 </div>
 
@@ -83,5 +95,6 @@ function onFlaskPressed(index: number){
 	justify-content: space-around;
 	flex-wrap: wrap;
 }
+
 
 </style>
