@@ -28,6 +28,11 @@ $: () => {
 	margin: 0.7em 0.5rem;
 }
 
+.liquid {
+	border-top: 2px dotted black;
+
+}
+
 .selected {
 	transform: translateY(-20px);
 	filter: drop-shadow(0px 10px 4px #4444dd);
