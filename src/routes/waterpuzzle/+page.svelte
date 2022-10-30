@@ -3,6 +3,7 @@ import { onMount } from "svelte";
 
 import type { liquid } from "./flask";
 import Flask from "./flask.svelte";
+import GameplayCapture from "./gameplay_capture.svelte";
 import { is_solved, move, solve } from "./solver";
 
 let move_amt = 1;
@@ -78,6 +79,7 @@ let flasks: liquid[][] = [
 
 let selected: number | undefined = undefined;
 
+
 let prev: Generator | undefined; 
 function pour(from: number, to: number){
 	move(flasks, from, to, move_amt);
@@ -103,10 +105,8 @@ function pour(from: number, to: number){
 	
 	/* if(is_solved(flasks)) alert("You solved it!"); */
 }
-let screenCapture: undefined | MediaStream;
-async function enableScreenCapture(){
-	screenCapture = await navigator.mediaDevices.getDisplayMedia();
-}
+
+
 
 function onFlaskPressed(index: number){
 	if(selected === undefined) {
@@ -120,6 +120,8 @@ function onFlaskPressed(index: number){
 	}
 }
 </script>
+
+
 
 <div class="shelf">
 {#each flasks as flask, i}
@@ -140,12 +142,8 @@ function onFlaskPressed(index: number){
 <input type="range" min="1" max="4" bind:value={move_amt}>
 {move_amt}
 
-<button on:click={enableScreenCapture}>hello world! </button>
 
-{#if screenCapture != undefined}
-<video src={screenCapture} ></video>
-{/if}
-
+<GameplayCapture></GameplayCapture>
 <style>
 .shelf {
 	display: flex; 
