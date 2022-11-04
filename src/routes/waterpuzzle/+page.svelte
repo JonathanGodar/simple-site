@@ -8,13 +8,6 @@ import { is_solved, move, solve } from "./solver";
 
 let move_amt = 1;
 let flasks: liquid[][] = [
-/* [ */
-/* {ammount: 2, id: 2}, */
-/* ], [ */
-/* {ammount: 2, id: 2}, */
-/* ] */
-
-
 [
 	{ammount: 1, id: 2},
 	{ammount: 1, id: 0},
