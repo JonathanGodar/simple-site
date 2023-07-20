@@ -8,19 +8,17 @@ export type liquid = {
 
 
 export const liquid_colors = Object.freeze([
-	"brown",
-	"aqua",
-	"darkblue",
-	"darkgreen",
-
-	"pink",
+	"lightgreen",
 	"purple",
-	"orange"
-	// "purple",
-	// "orange",
-	// "blue",
-	// "gray",
-	// "red",
-	// "pink",
+	"brown",
+	"lightblue",
+	"green",
+	"red",
+	"gray",
+	"yellow",
+	"pink",
+	"#003300", // "darkgreen",
+	"magenta",
+	"darkblue"
 ]);
 

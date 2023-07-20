@@ -9,67 +9,91 @@ import { is_solved, move, solve } from "./solver";
 let move_amt = 1;
 let flasks: liquid[][] = [
 [
-	{ammount: 1, id: 2},
 	{ammount: 1, id: 0},
+	{ammount: 1, id: 1},
+	{ammount: 2, id: 2},
 ],
 [
 	{ammount: 1, id: 3},
+	{ammount: 1, id: 4},
+	{ammount: 1, id: 5},
+	{ammount: 1, id: 6},
+],
+[
+	{ammount: 1, id: 7},
+	{ammount: 1, id: 3},
+	{ammount: 1, id: 8},
+	{ammount: 1, id: 9},
+],
+[
+	{ammount: 1, id: 7},
+	{ammount: 1, id: 4},
+	{ammount: 1, id: 8},
+	{ammount: 1, id: 7},
+],
+[
+	{ammount: 1, id: 1},
+	{ammount: 1, id: 8},
+	{ammount: 1, id: 10},
+	{ammount: 1, id: 0},
+],
+[
+	{ammount: 1, id: 10},
+	{ammount: 1, id: 1},
+	{ammount: 1, id: 9},
 	{ammount: 1, id: 1},
 ],
 [
-	{ammount: 1, id: 0},
-	{ammount: 2, id: 4},
+	{ammount: 1, id: 9},
 	{ammount: 1, id: 3},
+	{ammount: 1, id: 8},
+	{ammount: 1, id: 11},
 ],
 [
+	{ammount: 1, id: 11},
 	{ammount: 1, id: 3},
-	{ammount: 1, id: 0},
-	{ammount: 2, id: 1},
+	{ammount: 1, id: 4},
+	{ammount: 1, id: 11},
 ],
 [
+	{ammount: 1, id: 5},
+	{ammount: 1, id: 6},
 	{ammount: 1, id: 2},
-	{ammount: 1, id: 1},
-	{ammount: 2, id: 4},
+	{ammount: 1, id: 0},
 ],
 [
-	{ammount: 1, id: 0},
-	{ammount: 1, id: 2},
-	{ammount: 1, id: 3},
-	{ammount: 1, id: 2},
+	{ammount: 1, id: 9},
+	{ammount: 1, id: 10},
+	{ammount: 1, id: 6},
+	{ammount: 1, id: 5},
 ],
-
-// One case
-	/* [ */
-	/* 	{ammount: 1, id: 0}, */
-	/* 	{ammount: 1, id: 1}, */
-	/* 	{ammount: 1, id: 0}, */
-	/* ], */
-	/* [ */
-	/* 	{ammount: 1, id: 1}, */
-	/* 	{ammount: 1, id: 0}, */
-	/* 	{ammount: 2, id: 2}, */
-	/* ], */
-	/* [ */
-	/* 	{ammount: 1, id: 0}, */
-	/* 	{ammount: 1, id: 3}, */
-	/* 	{ammount: 1, id: 4}, */
-	/* 	{ammount: 1, id: 3}, */
-	/* ], */
-	/* [ */
-	/* 	{ammount: 1, id: 1}, */
-	/* ], */
-	/* [ */
-	/* 	{ammount: 1, id: 4}, */
-	/* 	{ammount: 1, id: 2}, */
-	/* 	{ammount: 2, id: 4}, */
-	/* ], */
-	/* [ */
-	/* 	{ammount: 1, id: 1}, */
-	/* 	{ammount: 2, id: 3}, */
-	/* 	{ammount: 1, id: 2}, */
-	/* ], */
+[
+	{ammount: 1, id: 6},
+	{ammount: 1, id: 10},
+	{ammount: 1, id: 11},
+	{ammount: 1, id: 0},
+],
+[
+	{ammount: 1, id: 5},
+	{ammount: 1, id: 2},
+	{ammount: 1, id: 4},
+	{ammount: 1, id: 7},
+],
+[],
+[]
 ];
-
+	// 0 "lightgreen",
+	// 1 "purple",
+	// 2 "brown",
+	// 3 "lightblue",
+	// 4 "green",
+	// 5 "red",
+	// 6 "gray",
+	// 7 "yellow",
+	// 8 "pink",
+	// 9 "darkgreen",
+	// 10 "magenta",
+	// 11 darkblue
 let selected: number | undefined = undefined;
 
 
@@ -77,26 +101,6 @@ let prev: Generator | undefined;
 function pour(from: number, to: number){
 	move(flasks, from, to, move_amt);
 	flasks = flasks;
-	/* if(flasks[to].length === 0){ */
-	/* 	flasks[to].push(flasks[from].shift() as any); */
-	/* 	flasks = flasks; */
-	/* 	return; */
-	/* } */
-
-	/* if(flasks[from][0].id !== flasks[to][0].id) return; */
-
-	/* const to_filled = flasks[to].reduce((prev, flask) => prev + flask.ammount, 0); */
-	/* const maximum_pour = flasks[from][0].ammount; */
-
-	/* const remaining_space = 4 - to_filled; */
-	/* const to_pour = Math.min(maximum_pour, remaining_space); */
-
-	/* flasks[from][0].ammount = flasks[from][0].ammount - to_pour; */
-	/* if(flasks[from][0].ammount === 0) flasks[from].shift(); */
-
-	/* flasks[to][0].ammount = flasks[to][0].ammount + to_pour; */
-	
-	/* if(is_solved(flasks)) alert("You solved it!"); */
 }
 
 
@@ -118,6 +122,7 @@ function onFlaskPressed(index: number){
 
 <div class="shelf">
 {#each flasks as flask, i}
+	 <p>{i}</p>
 			<Flask isSelected={i === selected} contents={flask} on:click={
 				() => {
 					onFlaskPressed(i);
@@ -126,16 +131,31 @@ function onFlaskPressed(index: number){
 {/each}
 </div>
 
+<button on:click={() => {
+	if(prev == undefined) prev = solve(flasks); 
+
+	setInterval(() => {
+		if(prev == undefined) {
+			alert("Prev was undefiend");
+		  return;
+		}
+
+		prev.next();
+		flasks = flasks;
+	}, 0);
+
+}
+}>Slove</button>
 
 <button on:click={() => {
-	if(prev == undefined) prev = solve(flasks); prev.next();
+	if(prev == undefined) prev = solve(flasks); 
+	prev.next();
 	flasks = flasks;
 }
-}>Solve!</button>
+}>Take one step</button>
+
 <input type="range" min="1" max="4" bind:value={move_amt}>
 {move_amt}
-
-
 <GameplayCapture></GameplayCapture>
 <style>
 .shelf {

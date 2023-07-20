@@ -12,22 +12,32 @@ export function* solve(flaks: liquid[][]){
 	const moves: number[][] = [];
 
 	console.log("Solving!")
-	const generator = solver_inner(flaks, moves);
+	const generator = solver_inner(flaks, moves, new Map());
 	let prev: IteratorResult<undefined>;
 	do {
 		prev = generator.next();
 		yield;
 	} while(!prev.done);
+
+	console.log("Solution:");
+	console.log(moves);
+
 	alert("done!");
 }
 
-export function* solver_inner(flasks: liquid[][], moves: number[][]){
+export function* solver_inner(flasks: liquid[][], moves: number[][], seen: Map<string, void>){
 	// Favourable moves:
 	// Fills a flask
 	// Leaves a flask without anything inside
 	// puts a liquid in a 
-	console.log(moves);
-	if(is_solved(flasks)) alert("solved!");
+	
+	seen.set(JSON.stringify(flasks));
+	
+	if(is_solved(flasks)) {
+		console.log("Solution: ");
+		console.log(moves);
+		alert("solved!")
+	};
 
 	const possible_moves: number[][] = [];
 	for(let from = 0; from < flasks.length; from++){
@@ -35,7 +45,7 @@ export function* solver_inner(flasks: liquid[][], moves: number[][]){
 		for(let to = 0; to < flasks.length; to++) {
 			if(from === to) continue;
 			if(flasks[to].length === 0){
-				possible_moves.push([from, to]);
+				possible_moves.push([from, to, flasks[from][0].ammount]);
 				continue;
 			} 
 
@@ -50,29 +60,42 @@ export function* solver_inner(flasks: liquid[][], moves: number[][]){
 		}
 	}
 
-	console.log(possible_moves);
 	for(const next_move of possible_moves) {
 		const [from, to, amt_to_move] = next_move;
-		// const amt_to_move = Math.min(flasks[from][0].ammount, 4 - flasks[to].reduce((prev, flask) => flask.ammount + prev, 0));
 
 		moves.push(next_move);
-		move(flasks, from, to, amt_to_move);
 
-		yield;
-		// solver_inner(flasks, moves);
-		const generator = solver_inner(flasks, moves);
-		let prev: IteratorResult<undefined>;
-		do {
-			prev = generator.next();
+		console.log(`Moving ${from}->${to} x ${amt_to_move}`);
+		console.log(next_move);
+
+		let doYield = true;
+
+		// Some ugly fix for an ugly bug where it tries there is a move from an empty flask in the possible moves list :/
+		try {
+			move(flasks, from, to, amt_to_move);
+		} catch(e) {
+			moves.pop();
+			continue;
+		}
+		
+		if (!seen.has(JSON.stringify(flasks))) {
 			yield;
-		} while(!prev.done);
+			const generator = solver_inner(flasks, moves, seen);
+			let prev: IteratorResult<undefined>;
+			do {
+				prev = generator.next();
+				yield;
+			} while(!prev.done);
 
-		console.log("back tracking");
-		alert("back tracking");
+			console.log(`Backtracking ${to}->${from} x ${amt_to_move}`);
+		} else {
+			doYield = false;
+		}
 
 		move(flasks, to, from, amt_to_move);
 		moves.pop();
-		yield;
+
+		if (doYield) yield;
 	}
 }
 
